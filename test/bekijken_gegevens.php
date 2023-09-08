@@ -2,28 +2,20 @@
 include "connect.php";
 session_start();
 
-if (isset($_SESSION['admin'])) {
-    if ($_SESSION['admin'] = 0) {
+if (isset($_SESSION['login'])) {
+    if ($_SESSION['login'] == 0) {
         header('Location: index.php');
     }
 } else {
     header('Location: index.php');
 }
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
+
 <?php
 if(isset($_POST['knop'])) {
     $klas = $_POST['klassen'];
 
-    $sql = "SELECT tblboek.naam, tblboek.prijs FROM tblboekinklas
+    $sql = "SELECT tblboek.naam, tblboek.prijs,volgnummer FROM tblboekinklas
                 INNER JOIN tblboek
                 ON (tblboekinklas.boeknummer = tblboek.boeknummer)
                 WHERE klasnummer = '".$klas."'";
@@ -41,9 +33,14 @@ if(isset($_POST['knop'])) {
         echo "<tr>
             <td>".$row['naam']."</td>
             <td>€".$row['prijs']."</td>
-            </tr>";
-
+            <td>";
         $totaleprijs += $row['prijs'];
+
+
+        if ($_SESSION['admin']==1){
+            echo " <a href=wissen_boek_van_klas.php?tewissen=".$row["volgnummer"]. ">Wissen</a></td></tr>";
+        }
+
     }
 
     echo "
@@ -51,6 +48,9 @@ if(isset($_POST['knop'])) {
         <td colspan=2>Totale prijs: €".$totaleprijs."</td>
         </tr>
         </table>";
+    if ($_SESSION["admin"]) {
+        print "<a href='toevoegen_boek_van_klas.php'>voeg een record toe</a>";
+    }
 
 } else {
     echo "
@@ -61,9 +61,9 @@ if(isset($_POST['knop'])) {
             ";
 
     $sql = "SELECT * FROM tblklas";
-    $result = $mysqli->query($sql);
+    $resultaat = $mysqli->query($sql);
 
-    while ($row = $result->fetch_assoc()) {
+    while ($row = $resultaat->fetch_assoc()) {
         echo "
                 <option value='".$row['klasnummer']."'>".$row['klasnaam']."</option>
                 ";
