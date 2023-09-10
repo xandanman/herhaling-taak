@@ -37,10 +37,23 @@ if ($_SESSION["admin"]) {
 }
 
 if ($_SESSION["admin"]) {
-$sql=" Select * From tblboekinklas ";
+$sql="SELECT tblboek.boeknummer, tblboek.prijs,SUM(tblklas.aantalleerlingen),tblboek.prijs*SUM(tblklas.aantalleerlingen)
+FROM tblklas,tblboekinklas,tblboek
+WHERE tblboek.boeknummer=tblboekinklas.boeknummer
+AND tblklas.klasnummer=tblboekinklas.klasnummer
+GROUP BY tblboek.boeknummer";
 
+    $resultaat = $mysqli->query($sql);
 
-    
+    echo '<br><br><br><br><br><h1>Bekijken te bestellen boeken</h1>';
+    echo '<table>';
+    echo '<tr><td>boeknummer</td><td>prijs</td><td>aantal leerlingen</td><td>totaal prijs</td></tr><tr>';
+    while ($row = $resultaat->fetch_assoc()) {
+        echo "<td>". $row['boeknummer'] ."</td><td>". $row['prijs'] . "</td>
+<td>". $row['SUM(tblklas.aantalleerlingen)'] . "</td>
+<td>". $row['tblboek.prijs*SUM(tblklas.aantalleerlingen)'] . "</td></tr>";
+    }
+    echo '';
 }
 
 
